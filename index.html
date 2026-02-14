@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <title>mi hermosa valentina, esto es para ti</title>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at top, #1b0033, #000);
+      font-family: Arial, sans-serif;
+      touch-action: none;
+    }
+
+    #topText {
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 22px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 25px;
+      color: white;
+      font-size: 16px;
+      z-index: 10;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      text-shadow: 0 0 8px rgba(255,0,200,0.7);
+    }
+
+    #bottomText {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 25px;
+      color: white;
+      font-size: 14px;
+      z-index: 10;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      opacity: 0.95;
+      text-shadow: 0 0 10px rgba(255,0,200,0.7);
+    }
+
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="topText">te amo mucho mi hermosa princesa ELENA</div>
+  <div id="bottomText">✨ Desliza para girar | Pellizca para Zoom ✨</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
+  <script>
+    // ===============================
+    // ESCENA
+    // ===============================
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(
+      70,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      4000
+    );
+
+    camera.position.set(0, 80, 240);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    document.body.appendChild(renderer.domElement);
+
+    // ===============================
+    // LUCES
+    // ===============================
+    const ambient = new THREE.AmbientLight(0xffffff, 1.2);
+    scene.add(ambient);
+
+    const light = new THREE.PointLight(0xff00ff, 3, 2000);
+    light.position.set(0, 200, 200);
+    scene.add(light);
+
+    // ===============================
+    // GRUPO PRINCIPAL
+    // ===============================
+    const galaxyGroup = new THREE.Group();
+    scene.add(galaxyGroup);
+
+    // ===============================
+    // ESTRELLAS (FONDO)
+    // ===============================
+    const starGeometry = new THREE.BufferGeometry();
+    const starCount = 4000;
+    const positions = new Float32Array(starCount * 3);
+
+    for (let i = 0; i < starCount; i++) {
+      positions[i * 3] = (Math.random() - 0.5) * 2500;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 2500;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 2500;
+    }
+
+    starGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+
+    const starMaterial = new THREE.PointsMaterial({
+      color: 0xffffff,
+      size: 2,
+      transparent: true,
+      opacity: 0.9
+    });
+
+    const stars = new THREE.Points(starGeometry, starMaterial);
+    scene.add(stars);
+
+    // ===============================
+    // SUELO CURVO TIPO PLANETA (NO PLANO)
+    // ===============================
+    const sphereGeo = new THREE.SphereGeometry(500, 64, 64);
+    const sphereMat = new THREE.MeshStandardMaterial({
+      color: 0x7a3cff,
+      transparent: true,
+      opacity: 0.30,
+      roughness: 0.4,
+      metalness: 0.2
+    });
+
+    const planet = new THREE.Mesh(sphereGeo, sphereMat);
+    planet.position.y = -520;
+    galaxyGroup.add(planet);
+
+    // ===============================
+    // ANILLO CENTRAL NEÓN
+    // ===============================
+    const ringGeo = new THREE.TorusGeometry(35, 2.2, 30, 120);
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0xff00cc });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.rotation.x = Math.PI / 2;
+    ring.position.y = 0;
+    galaxyGroup.add(ring);
+
+    const ringGlowGeo = new THREE.TorusGeometry(35, 6, 30, 120);
+    const ringGlowMat = new THREE.MeshBasicMaterial({
+      color: 0xff00cc,
+      transparent: true,
+      opacity: 0.25
+    });
+
+    const ringGlow = new THREE.Mesh(ringGlowGeo, ringGlowMat);
+    ringGlow.rotation.x = Math.PI / 2;
+    ringGlow.position.y = 0;
+    galaxyGroup.add(ringGlow);
+
+    // ===============================
+    // FRASES ALEATORIAS
+    // ===============================
+    const frases = [
+      "Mi amor 💜",
+      "Eres mi vida ✨",
+      "Te amo mucho ❤️",
+      "Mi Cielito 🌙",
+      "Mi Bebé 💕",
+      "Mi Todo 💖",
+      "Mi Infinita ♾️",
+      "Mi Príncesa 👑",
+      "Mi Reina 👑",
+      "Mi Hermosa 💘",
+      "Eres mi universo 🌌",
+      "Te quiero infinito ♾️",
+      "Mi corazón 💗",
+      "Solo tú 💜",
+      "Mi destino 💞",
+      "Mi alegría 😊",
+      "Siempre juntos 💑",
+      "Mi razón 💘",
+      "Mi bombón 🍬",
+      "Mi dios 😍"
+    ];
+
+    // ===============================
+    // TEXTO COMO SPRITE 3D (SIEMPRE MIRANDO A CAMARA)
+    // ===============================
+    function createTextSprite(text) {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      canvas.width = 512;
+      canvas.height = 256;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Glow morado
+      ctx.font = "bold 52px Arial";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      ctx.shadowColor = "#ff00ff";
+      ctx.shadowBlur = 30;
+
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+
+      // borde rosa
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = "#ff66ff";
+      ctx.lineWidth = 3;
+      ctx.strokeText(text, canvas.width / 2, canvas.height / 2);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      const material = new THREE.SpriteMaterial({
+        map: texture,
+        transparent: true
+      });
+
+      const sprite = new THREE.Sprite(material);
+      sprite.scale.set(40, 18, 1);
+      return sprite;
+    }
+
+    // ===============================
+    // ORBITA 3D REAL (DISTRIBUCIÓN EN ESFERA)
+    // ===============================
+    const textSprites = [];
+    const totalTexts = 90;
+    const radius = 180;
+
+    for (let i = 0; i < totalTexts; i++) {
+      const frase = frases[Math.floor(Math.random() * frases.length)];
+      const sprite = createTextSprite(frase);
+
+      // esfera aleatoria
+      const phi = Math.acos(2 * Math.random() - 1);
+      const theta = 2 * Math.PI * Math.random();
+
+      const x = radius * Math.sin(phi) * Math.cos(theta);
+      const y = (radius * Math.cos(phi)) * 0.55; // aplastado para que parezca órbita baja
+      const z = radius * Math.sin(phi) * Math.sin(theta);
+
+      sprite.position.set(x, y, z);
+
+      // guardar velocidad individual
+      sprite.userData.speed = 0.001 + Math.random() * 0.002;
+
+      galaxyGroup.add(sprite);
+      textSprites.push(sprite);
+    }
+
+    // ===============================
+    // CONTROL TOUCH ROTACIÓN + ZOOM
+    // ===============================
+    let isDragging = false;
+    let lastX = 0;
+    let lastY = 0;
+
+    let zoom = 240;
+    camera.position.z = zoom;
+
+    function clamp(val, min, max) {
+      return Math.max(min, Math.min(max, val));
+    }
+
+    function onPointerDown(e) {
+      isDragging = true;
+      lastX = e.touches ? e.touches[0].clientX : e.clientX;
+      lastY = e.touches ? e.touches[0].clientY : e.clientY;
+    }
+
+    function onPointerMove(e) {
+      if (!isDragging) return;
+
+      const x = e.touches ? e.touches[0].clientX : e.clientX;
+      const y = e.touches ? e.touches[0].clientY : e.clientY;
+
+      const dx = x - lastX;
+      const dy = y - lastY;
+
+      galaxyGroup.rotation.y += dx * 0.003;
+      galaxyGroup.rotation.x += dy * 0.003;
+
+      lastX = x;
+      lastY = y;
+    }
+
+    function onPointerUp() {
+      isDragging = false;
+    }
+
+    window.addEventListener("mousedown", onPointerDown);
+    window.addEventListener("mousemove", onPointerMove);
+    window.addEventListener("mouseup", onPointerUp);
+
+    window.addEventListener("touchstart", onPointerDown, { passive: true });
+    window.addEventListener("touchmove", onPointerMove, { passive: true });
+    window.addEventListener("touchend", onPointerUp, { passive: true });
+
+    // ===============================
+    // PINCH ZOOM
+    // ===============================
+    let lastDist = null;
+
+    function distance(t1, t2) {
+      const dx = t1.clientX - t2.clientX;
+      const dy = t1.clientY - t2.clientY;
+      return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    window.addEventListener("touchmove", (e) => {
+      if (e.touches.length === 2) {
+        const dist = distance(e.touches[0], e.touches[1]);
+
+        if (lastDist !== null) {
+          const diff = dist - lastDist;
+          zoom -= diff * 0.25;
+          zoom = clamp(zoom, 120, 500);
+
+          camera.position.z = zoom;
+        }
+
+        lastDist = dist;
+      }
+    }, { passive: true });
+
+    window.addEventListener("touchend", (e) => {
+      if (e.touches.length < 2) lastDist = null;
+    });
+
+    // ===============================
+    // ANIMACIÓN
+    // ===============================
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Giro automático 3D
+      galaxyGroup.rotation.y += 0.0015;
+      galaxyGroup.rotation.x += 0.0005;
+
+      // Estrellas moviéndose hacia la cámara
+      const pos = stars.geometry.attributes.position.array;
+
+      for (let i = 0; i < starCount; i++) {
+        pos[i * 3 + 2] += 1.2;
+
+        if (pos[i * 3 + 2] > 1200) {
+          pos[i * 3 + 2] = -1200;
+        }
+      }
+      stars.geometry.attributes.position.needsUpdate = true;
+
+      // Palabras rotando en su propia órbita
+      textSprites.forEach(sprite => {
+        sprite.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), sprite.userData.speed);
+        sprite.quaternion.copy(camera.quaternion); // siempre mirando a la cámara
+      });
+
+      // Glow pulsante
+      ringGlow.material.opacity = 0.18 + Math.sin(Date.now() * 0.004) * 0.12;
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // ===============================
+    // RESIZE
+    // ===============================
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+  </script>
+
+</body>
+</html>
